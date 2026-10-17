@@ -1,0 +1,60 @@
+# RetailPulse central configuration.
+# Every value can be overridden by pointing RETAILPULSE_CONFIG at another YAML file.
+project: retailpulse
+
+paths:                       # relative paths are resolved against the project root
+  raw_dir: data/raw
+  processed_dir: data/processed
+  artifacts_dir: artifacts
+  reports_dir: reports
+
+data:                        # synthetic retail data generator (swap for your own CSVs, see README)
+  seed: 42
+  start_date: "2023-01-01"
+  end_date: "2024-12-31"
+  n_customers: 4000
+  n_stores: 8
+  n_products: 48
+
+mlflow:
+  tracking_uri: "sqlite:///mlflow.db"   # override with MLFLOW_TRACKING_URI (e.g. http://mlflow:5000)
+  experiment: retailpulse
+
+forecasting:
+  level: category            # series granularity: category | product
+  horizon_days: 28
+  test_days: 28              # hold-out window used for model selection
+  selection_metric: wape
+  models: [seasonal_naive, prophet, lstm]
+  lookback: 28               # LSTM input window (days)
+  lstm:
+    units: 32
+    epochs: 60
+    batch_size: 32
+    patience: 8
+  interval_z: 1.2816         # 80% prediction interval from back-test residuals
+
+segmentation:
+  k_range: [4, 5, 6]          # >=4 keeps segments business-actionable
+
+churn:
+  snapshot_date: "2024-09-30"   # features are built up to this date, label = no purchase in next horizon
+  horizon_days: 90
+  test_size: 0.25
+  cv_folds: 4
+
+inventory:
+  service_level: 0.95
+  order_cost: 40.0
+  holding_rate: 0.20          # annual holding cost as a share of unit cost
+  review_days: 7
+  overstock_days_cover: 60
+  demand_lookback_days: 90
+
+monitoring:
+  psi_threshold: 0.2
+  ks_alpha: 0.01
+  demand_recent_days: 28
+  demand_reference_days: 90
+  demand_yoy_tolerance: 0.35   # max tolerated year-over-year level change before flagging demand drift
+  ignore_features: [tenure_days]   # drift-check exclusions (mechanically time-dependent)

@@ -1,0 +1,37 @@
+# Scheduled retraining / re-scoring (every Monday 02:00 UTC). Drift reports are written to /app/reports,
+# and the dashboard banner shows whether a retrain was recommended.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: retailpulse-retrain
+  namespace: retailpulse
+spec:
+  schedule: "0 2 * * 1"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 7200
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext: {fsGroup: 10001}
+          containers:
+            - name: pipeline
+              image: retailpulse:latest
+              imagePullPolicy: IfNotPresent
+              args: ["pipeline", "all"]
+              envFrom: [{configMapRef: {name: retailpulse-env}}]
+              resources:
+                requests: {cpu: "1", memory: 2Gi}
+                limits: {cpu: "2", memory: 4Gi}
+              volumeMounts:
+                - {name: data, mountPath: /app/data/raw, subPath: raw}
+                - {name: data, mountPath: /app/data/processed, subPath: processed}
+                - {name: data, mountPath: /app/artifacts, subPath: artifacts}
+                - {name: data, mountPath: /app/reports, subPath: reports}
+          volumes:
+            - name: data
+              persistentVolumeClaim: {claimName: retailpulse-data}

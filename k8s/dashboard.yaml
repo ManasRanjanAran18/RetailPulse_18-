@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retailpulse-dashboard
+  namespace: retailpulse
+  labels: {app: retailpulse-dashboard}
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}
+  selector:
+    matchLabels: {app: retailpulse-dashboard}
+  template:
+    metadata:
+      labels: {app: retailpulse-dashboard}
+    spec:
+      securityContext: {fsGroup: 10001, runAsNonRoot: true, runAsUser: 10001}
+      containers:
+        - name: dashboard
+          image: retailpulse:latest
+          imagePullPolicy: IfNotPresent
+          args: ["dashboard"]
+          ports: [{containerPort: 8501, name: http}]
+          envFrom: [{configMapRef: {name: retailpulse-env}}]
+          readinessProbe:
+            httpGet: {path: /_stcore/health, port: http}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /_stcore/health, port: http}
+            initialDelaySeconds: 45
+            periodSeconds: 20
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {cpu: "1", memory: 2Gi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: data, mountPath: /app/data/processed, subPath: processed, readOnly: true}
+            - {name: data, mountPath: /app/artifacts, subPath: artifacts, readOnly: true}
+            - {name: data, mountPath: /app/reports, subPath: reports, readOnly: true}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: retailpulse-data}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: retailpulse-dashboard
+  namespace: retailpulse
+spec:
+  selector: {app: retailpulse-dashboard}
+  ports:
+    - {name: http, port: 80, targetPort: http}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: retailpulse-dashboard
+  namespace: retailpulse
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: retailpulse-dashboard}
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource: {name: cpu, target: {type: Utilization, averageUtilization: 70}}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: retailpulse-dashboard
+  namespace: retailpulse
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: {app: retailpulse-dashboard}

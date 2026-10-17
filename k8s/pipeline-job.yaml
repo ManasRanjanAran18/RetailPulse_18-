@@ -1,0 +1,32 @@
+# One-off bootstrap: generates the demo dataset and trains everything.
+# Replace `--with-data` by mounting your real CSVs into /app/data/raw to use your own data.
+# kubectl apply -f k8s/pipeline-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: retailpulse-bootstrap
+  namespace: retailpulse
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext: {fsGroup: 10001}
+      containers:
+        - name: pipeline
+          image: retailpulse:latest          # push to your registry and update the tag
+          imagePullPolicy: IfNotPresent
+          args: ["pipeline", "all", "--with-data"]
+          envFrom: [{configMapRef: {name: retailpulse-env}}]
+          resources:
+            requests: {cpu: "1", memory: 2Gi}
+            limits: {cpu: "2", memory: 4Gi}
+          volumeMounts:
+            - {name: data, mountPath: /app/data/raw, subPath: raw}
+            - {name: data, mountPath: /app/data/processed, subPath: processed}
+            - {name: data, mountPath: /app/artifacts, subPath: artifacts}
+            - {name: data, mountPath: /app/reports, subPath: reports}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: retailpulse-data}

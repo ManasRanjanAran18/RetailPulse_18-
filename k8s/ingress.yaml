@@ -1,0 +1,23 @@
+# Requires an ingress controller (e.g. ingress-nginx). Streamlit needs WebSocket support (enabled by default in nginx).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: retailpulse
+  namespace: retailpulse
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/affinity: cookie      # sticky sessions for Streamlit's websocket sessions
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: retailpulse.example.com                   # <- change
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: retailpulse-dashboard, port: {number: 80}}
+  # tls:
+  #   - hosts: [retailpulse.example.com]
+  #     secretName: retailpulse-tls

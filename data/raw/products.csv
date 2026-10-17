@@ -1,0 +1,49 @@
+product_id,product_name,category,list_price,unit_cost
+P001,Personal Care Item 1,Personal Care,15.82,10.13
+P002,Beverages Item 2,Beverages,1.9,1.09
+P003,Electronics Item 3,Electronics,41.08,23.81
+P004,Personal Care Item 4,Personal Care,4.06,3.21
+P005,Grocery Item 5,Grocery,9.76,7.58
+P006,Apparel Item 6,Apparel,43.1,31.24
+P007,Personal Care Item 7,Personal Care,16.56,10.21
+P008,Personal Care Item 8,Personal Care,19.29,15.28
+P009,Grocery Item 9,Grocery,5.04,3.75
+P010,Beverages Item 10,Beverages,3.89,2.84
+P011,Beverages Item 11,Beverages,1.9,1.26
+P012,Apparel Item 12,Apparel,12.86,7.95
+P013,Personal Care Item 13,Personal Care,15.38,8.83
+P014,Electronics Item 14,Electronics,80.6,62.52
+P015,Beverages Item 15,Beverages,3.86,2.56
+P016,Grocery Item 16,Grocery,9.34,5.61
+P017,Household Item 17,Household,18.71,11.72
+P018,Grocery Item 18,Grocery,6.1,4.24
+P019,Electronics Item 19,Electronics,100.33,59.62
+P020,Household Item 20,Household,9.41,7.19
+P021,Personal Care Item 21,Personal Care,4.26,3.15
+P022,Beverages Item 22,Beverages,3.12,2.28
+P023,Apparel Item 23,Apparel,16.02,10.54
+P024,Apparel Item 24,Apparel,24.54,17.35
+P025,Personal Care Item 25,Personal Care,22.33,15.54
+P026,Grocery Item 26,Grocery,3.2,2.28
+P027,Beverages Item 27,Beverages,1.65,0.94
+P028,Grocery Item 28,Grocery,3.53,2.31
+P029,Grocery Item 29,Grocery,3.61,2.02
+P030,Personal Care Item 30,Personal Care,15.18,10.22
+P031,Personal Care Item 31,Personal Care,12.29,7.77
+P032,Apparel Item 32,Apparel,55.98,32.81
+P033,Beverages Item 33,Beverages,4.56,2.63
+P034,Beverages Item 34,Beverages,2.96,2.06
+P035,Beverages Item 35,Beverages,5.86,3.47
+P036,Grocery Item 36,Grocery,2.8,2.19
+P037,Grocery Item 37,Grocery,2.09,1.45
+P038,Beverages Item 38,Beverages,1.74,1.11
+P039,Grocery Item 39,Grocery,8.57,5.98
+P040,Personal Care Item 40,Personal Care,10.14,5.63
+P041,Beverages Item 41,Beverages,1.96,1.55
+P042,Electronics Item 42,Electronics,86.83,58.23
+P043,Personal Care Item 43,Personal Care,5.44,4.06
+P044,Beverages Item 44,Beverages,4.81,2.74
+P045,Electronics Item 45,Electronics,75.76,50.89
+P046,Electronics Item 46,Electronics,64.44,43.35
+P047,Beverages Item 47,Beverages,2.48,1.95
+P048,Grocery Item 48,Grocery,7.12,4.93

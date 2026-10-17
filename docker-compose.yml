@@ -1,0 +1,50 @@
+# docker compose up --build        -> MLflow (5000) + pipeline (one-shot) + dashboard (8501)
+# docker compose run --rm pipeline all   -> re-run the pipeline (retrain)
+name: retailpulse
+
+x-app: &app
+  build: .
+  image: retailpulse:latest
+  environment:
+    MLFLOW_TRACKING_URI: http://mlflow:5000
+  volumes:
+    - raw:/app/data/raw
+    - processed:/app/data/processed
+    - artifacts:/app/artifacts
+    - reports:/app/reports
+
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.16.1
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --artifacts-destination /mlflow/artifacts
+      --allowed-hosts "mlflow:5000,localhost:5000,127.0.0.1:5000"
+    ports: ["5000:5000"]
+    volumes: [mlflow:/mlflow]
+    restart: unless-stopped
+
+  pipeline:                      # one-shot job: generate data (if absent) + ETL + train + score + monitor
+    <<: *app
+    command: ["pipeline", "all", "--with-data"]
+    depends_on: [mlflow]
+    restart: "no"
+
+  dashboard:
+    <<: *app
+    command: ["dashboard"]
+    ports: ["8501:8501"]
+    environment:
+      AUTO_BOOTSTRAP: "false"    # the pipeline service produces the data
+    depends_on:
+      pipeline:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  raw:
+  processed:
+  artifacts:
+  reports:
+  mlflow:

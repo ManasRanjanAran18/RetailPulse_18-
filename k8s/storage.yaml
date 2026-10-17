@@ -1,0 +1,24 @@
+# Shared volume for data/artifacts/reports. The dashboard and the retraining CronJob both mount it,
+# so use a ReadWriteMany-capable storage class (NFS / EFS / Filestore / Azure Files).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: retailpulse-data
+  namespace: retailpulse
+spec:
+  accessModes: [ReadWriteMany]
+  # storageClassName: <your-rwx-class>
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-data
+  namespace: retailpulse
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 5Gi
