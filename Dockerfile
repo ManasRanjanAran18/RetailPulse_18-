@@ -22,6 +22,7 @@ RUN pip install -r requirements.txt
 COPY config ./config
 COPY src ./src
 COPY app ./app
+COPY data ./data
 COPY data/processed ./data/processed
 COPY docker/entrypoint.sh /app/bin/entrypoint.sh
 COPY docker/retailpulse /app/bin/retailpulse
