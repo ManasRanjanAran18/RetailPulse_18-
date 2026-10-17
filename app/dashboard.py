@@ -27,16 +27,12 @@ RISK_COLORS = {"High": "#d62728", "Medium": "#ff9f1c", "Low": "#2ca02c"}
 def table(name: str) -> pd.DataFrame:
     return read_table(name, CFG)
 
-
 @st.cache_data(ttl=300, show_spinner=False)
 def report(name: str) -> dict:
     return read_report(name, CFG)
 
-
 def money(x: float) -> str:
     return f"${x:,.0f}"
-
-
 # ------------------------------------------------------------------------------------------ guard
 try:
     tx = table("transactions")
@@ -181,6 +177,7 @@ with tabs[4]:
         st.info("Run the inventory stage first.")
     else:
         s = report("inventory_summary")
+        st.write("DEBUG inventory_summary:", s)
         i1, i2, i3, i4 = st.columns(4)
         i1.metric("High stock-out risk SKUs", s.get("high_risk_skus", 0))
         i2.metric("Overstocked SKUs", s.get("overstocked_skus", 0))
